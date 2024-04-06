@@ -20,6 +20,12 @@
       </div>
     </app-custom-popover>
     <app-custom-popover title="Filters" style="margin: 6px">
+      <input
+        [(ngModel)]="searchVal"
+        type="text"
+        placeholder="Search ..."
+        width="100px"
+      />
       <h4 style="text-align: left; margin: 10px">Filter by Status:</h4>
       <div
         style="text-align: left; font-size: small; margin: 10px"

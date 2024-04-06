@@ -6,6 +6,7 @@ import { ISSUE_PRIORITIES, ISSUE_STATUSES } from '../consts/issue.consts';
 import { CustomPopoverComponent } from '../components/custom-popover/custom-popover.component';
 import { FormsModule } from '@angular/forms';
 import { IssueFormComponent } from '../issue-form/issue-form.component';
+import { filter } from 'rxjs';
 
 @Component({
   selector: 'app-issue-list',
@@ -24,6 +25,7 @@ export class IssueListComponent {
   availableStatuses = ISSUE_STATUSES;
   availablePriorities = ISSUE_PRIORITIES;
   listLoading: boolean = false;
+  searchVal: string = '';
   fields: { title: keyof Issue; value: boolean }[] = [
     { title: 'id', value: false },
     { title: 'title', value: true },
@@ -45,17 +47,26 @@ export class IssueListComponent {
     this.issueService
       .getIssues(this.params)
       .subscribe((issues) => {
-        this.issues = issues.map((issue) => ({
-          ...issue,
-          loading: false,
-          prv_state: issue,
-        }));
+        this.issues = issues
+          .filter((issue) =>
+            ['assignee', 'title'].some((field) =>
+              (issue[field as keyof Issue] as string)
+                .toLowerCase()
+                .includes(this.searchVal.toLowerCase())
+            )
+          )
+          .map((issue) => ({
+            ...issue,
+            loading: false,
+            prv_state: issue,
+          }));
       })
       .add(() => (this.listLoading = false));
   }
 
   clearParams() {
     this.params = { status: '', priority: '' };
+    this.searchVal = '';
   }
 
   addIssue(data: { issue: Issue; type: 'revert' | 'update' | 'opt' }) {
