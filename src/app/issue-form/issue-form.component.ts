@@ -47,7 +47,6 @@ export class IssueFormComponent {
         this.details.nativeElement.removeAttribute('open');
         this.issue = new Issue();
         form.reset(this.issue);
-        console.log(form.submitted);
       });
   }
 }
