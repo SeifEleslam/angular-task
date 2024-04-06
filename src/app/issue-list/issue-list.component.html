@@ -1,0 +1,95 @@
+<div class="issue-list">
+  <div
+    style="
+      display: flex;
+      flex-wrap: wrap;
+      padding: 20px;
+      justify-content: center;
+    "
+  >
+    <app-custom-popover title="Fields" style="margin: 6px">
+      <div style="text-align: left; margin: 10px" *ngFor="let option of fields">
+        <input
+          type="checkbox"
+          id="{{ option.title }}"
+          [(ngModel)]="option.value"
+        />
+        <label style="padding: 0 20px" for="{{ option.title }}">{{
+          option.title | uppercase
+        }}</label>
+      </div>
+    </app-custom-popover>
+    <app-custom-popover title="Filters" style="margin: 6px">
+      <h4 style="text-align: left; margin: 10px">Filter by Status:</h4>
+      <div
+        style="text-align: left; font-size: small; margin: 10px"
+        *ngFor="let option of availableStatuses"
+      >
+        <input
+          type="radio"
+          name="status"
+          id="{{ option }}"
+          value="{{ option }}"
+          [(ngModel)]="params.status"
+        />
+        <label style="padding: 0 20px" for="{{ option }}">{{
+          option | uppercase
+        }}</label>
+      </div>
+      <h4 style="text-align: left; margin: 10px; margin-top: 20px">
+        Filter by Priority:
+      </h4>
+      <div
+        style="text-align: left; font-size: small; margin: 10px"
+        *ngFor="let option of availablePriorities"
+      >
+        <input
+          type="radio"
+          name="priority"
+          id="{{ option }}"
+          value="{{ option }}"
+          [(ngModel)]="params.priority"
+        />
+        <label style="padding: 0 20px" for="{{ option }}">{{
+          option | uppercase
+        }}</label>
+      </div>
+      <div style="display: flex; justify-content: center">
+        <button style="margin: 6px" (click)="clearParams()">Clear</button>
+
+        <button style="margin: 6px" (click)="fetchIssues()">Apply</button>
+      </div>
+    </app-custom-popover>
+  </div>
+  <div style="display: flex; justify-content: center; margin: 10px 0">
+    <app-issue-form (update)="addIssue($event)"></app-issue-form>
+  </div>
+  <table #issueList>
+    <thead></thead>
+    <tbody>
+      @if(listLoading){
+      <div class="empty">...loading</div>
+      } @else if (!issues.length) {
+      <div class="empty">cheer up, there are no issues!</div>
+      } @else { @for (issue of issues; track issue.id) {
+      <tr [ngClass]="{ loading: issue.loading }">
+        @for (field of fields; track field){
+        <td *ngIf="field.value">{{ issue[field.title] }}</td>
+        }
+        <td>
+          <select
+            [disabled]="issue.loading"
+            (change)="updateIssueStatus(issue, $event)"
+          >
+            @for (status of availableStatuses; track status) {
+            <option [value]="status" [selected]="issue.status === status">
+              {{ status }}
+            </option>
+            }
+          </select>
+        </td>
+      </tr>
+      } }
+    </tbody>
+  </table>
+</div>
